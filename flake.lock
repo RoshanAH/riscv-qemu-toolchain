@@ -16,9 +16,26 @@
         "type": "github"
       }
     },
+    "nixpkgs-qemu": {
+      "locked": {
+        "lastModified": 1725099143,
+        "narHash": "sha256-CHgumPZaC7z+WYx72WgaLt2XF0yUVzJS60rO4GZ7ytY=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5629520edecb69630a3f4d17d3d33fc96c13f6fe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5629520edecb69630a3f4d17d3d33fc96c13f6fe",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-qemu": "nixpkgs-qemu"
       }
     }
   },

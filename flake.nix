@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    # nixpkgs with the correct version of qemu so we don't have to package it ourselves
     # https://github.com/NixOS/nixpkgs/blob/81dcfeef771d77f0bc5cd8bfe01def33e7839fa9/pkgs/applications/virtualization/qemu/default.nix
     nixpkgs-qemu.url = "github:nixos/nixpkgs/5629520edecb69630a3f4d17d3d33fc96c13f6fe";
   };
@@ -12,12 +13,6 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       qemu-pkgs = nixpkgs-qemu.legacyPackages.${system};
-      # pkgs-riscv = import nixpkgs {
-      #   inherit system;
-      #   crossSystem = {  
-      #     system = "riscv64-none-elf";
-      #   };
-      # };
 
     in {
       packages.${system} = {

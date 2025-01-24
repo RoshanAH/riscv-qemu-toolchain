@@ -1,7 +1,7 @@
 diff --git hw/riscv/virt.c hw/riscv/virt.c
 index d171e74f7b..ea9842654b 100644
---- hw/riscv/virt.c
-+++ hw/riscv/virt.c
+--- a/hw/riscv/virt.c
++++ b/hw/riscv/virt.c
 @@ -80,6 +80,13 @@ static const MemMapEntry virt_memmap[] = {
      [VIRT_APLIC_M] =      {  0xc000000, APLIC_SIZE(VIRT_CPUS_MAX) },
      [VIRT_APLIC_S] =      {  0xd000000, APLIC_SIZE(VIRT_CPUS_MAX) },
@@ -81,8 +81,8 @@ index d171e74f7b..ea9842654b 100644
          qdev_get_gpio_in(mmio_irqchip, RTC_IRQ));
 diff --git include/hw/riscv/virt.h include/hw/riscv/virt.h
 index 3db839160f..e5767fa474 100644
---- include/hw/riscv/virt.h
-+++ include/hw/riscv/virt.h
+--- a/include/hw/riscv/virt.h
++++ b/include/hw/riscv/virt.h
 @@ -75,6 +75,13 @@ enum {
      VIRT_APLIC_M,
      VIRT_APLIC_S,

@@ -34,9 +34,10 @@
       };
 
       devShells.${system}.default = pkgs.mkShell {
-        nativeBuildInputs = [ 
+        packages = [
           self.packages.${system}.qemu 
           self.packages.${system}.riscv-gnu-toolchain
+          pkgs.screen
         ];
       };
 

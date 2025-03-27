@@ -49,6 +49,7 @@
               self'.packages.qemu
               self'.packages.riscv-gnu-toolchain
               pkgs.screen
+              pkgs.bear
             ];
           };
         };

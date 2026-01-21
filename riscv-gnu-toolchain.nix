@@ -1,44 +1,45 @@
 { fetchFromGitHub, fetchgit, stdenv, curl, texinfo, bison, flex, gmp, mpfr, libmpc, python3, perl, flock, expat }:
 let
-  # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/binutils-gdb.git --rev 060bfd90813b829e7c6a8f7347d5f834d406c29b
+  # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/binutils-gdb.git
   binutilsSrc = fetchgit {
     url = "https://sourceware.org/git/binutils-gdb.git";
-    rev = "060bfd90813b829e7c6a8f7347d5f834d406c29b"; #v2.40
-    hash = "sha256-qUDQRvmQ80lBHxU/0TPy/c8oDEuayKWpisYqbHRYoWI=";
+    rev = "c7f28aad0c99d1d2fec4e52ebfa3735d90ceb8e9";
+    hash = "sha256-uCeNk6eIk1G2YyohCZEF04buMzu7boPt3k2nQbdkxqU=";
   };
-  # nix run -- nixpkgs#nix-prefetch-git --url https://gcc.gnu.org/git/gcc.git --rev 091e10203846812c4e98b465ddfb36d12f146be8
+  # nix run -- nixpkgs#nix-prefetch-git --url https://gcc.gnu.org/git/gcc.git
   gccSrc = fetchgit {
     url = "https://gcc.gnu.org/git/gcc.git";
-    rev = "091e10203846812c4e98b465ddfb36d12f146be8"; # 13
-    hash = "sha256-3EkTO6wnsqzq6sqbv/uBXrgKtdtLS85805Vg2lsb08M=";
+    rev = "c891d8dc23e1a46ad9f3e757d09e57b500d40044";
+    hash = "sha256-AAu/jE3MlMgvd+xagn9ujJ8PpKJZ16iZXhU9QxNRZSk=";
   };
-  # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/glibc.git --rev 36f2487f13e3540be9ee0fb51876b1da72176d3f
+  # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/glibc.git
   glibcSrc = fetchgit {
     url = "https://sourceware.org/git/glibc.git";
-    rev = "36f2487f13e3540be9ee0fb51876b1da72176d3f"; # 2.38
-    hash = "sha256-o/lKFroKT9OmQunHi84Zklb48LNJAzp7XVXeMc8FEGg=";
+    rev = "ef321e23c20eebc6d6fb4044425c00e6df27b05f";
+    hash = "sha256-wFaBz6nRRW/uzri8ra/sYTNHpHpPO3o7uH3uXM6kIH8=";
   };
-  # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/binutils-gdb.git --rev 71c90666e601c511a5f495827ca9ba545e4cb463
+  # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/binutils-gdb.git 
   gdbSrc = fetchgit {
     url = "https://sourceware.org/git/binutils-gdb.git";
-    rev = "71c90666e601c511a5f495827ca9ba545e4cb463"; # 13
-    hash = "sha256-mc6HmuOJud3ycTcDqkRQP/AuXZhc/VQ4q119MhLq478=";
+    rev = "6bda1c19bcd16eff8488facb8a67d52a436f70e7";
+    hash = "sha256-ghCWNqiYyp8NdNlMfYG5opZgU+PzYk/PiF8HT/aPr2o=";
   };
+  # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/newlib-cygwin.git 
   newlibSrc = fetchgit {
     url = "https://sourceware.org/git/newlib-cygwin.git";
-    rev = "bf94b87f54de862a1c2482d411a18973b29264fe"; 
-    hash = "sha256-tSYZfc8AM3fg6BhJYM8LqfWU5s0kpmRLHFZJtokpJXc=";
+    rev = "26f7004bf73c421c3fd5e5a6ccf470d05337b435"; 
+    hash = "sha256-6jaggRYn2WH/aWCQsxzC15y5aYyBPBDkqN7C16u63ac=";
   };
 in
 stdenv.mkDerivation rec {
   pname = "riscv-gnu-toolchain";
-  version = "2024.12.16";
+  version = "2024.04.12";
   srcs =
     (fetchFromGitHub {
       owner = "riscv-collab";
       repo = pname;
       rev = version;
-      sha256 = "sha256-FZE7DIW+aP5mAmmWdgMXohOhMLngQrG2zoyF+zV97+A=";
+      sha256 = "sha256-MlsYeSJw3uCZg86uNvUdKwEpvhrU9TrnhMA0KkCOyn8=";
     });
 
   postUnpack = ''

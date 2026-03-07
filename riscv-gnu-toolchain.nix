@@ -1,4 +1,4 @@
-{ fetchFromGitHub, fetchgit, stdenv, curl, texinfo, bison, flex, gmp, mpfr, libmpc, python3, perl, flock, expat }:
+{ fetchFromGitHub, fetchgit, stdenv, curl, texinfo, bison, flex, gmp, mpfr, libmpc, python3, perl, flock, expat, ncurses }:
 let
   # nix run -- nixpkgs#nix-prefetch-git --url https://sourceware.org/git/binutils-gdb.git
   binutilsSrc = fetchgit {
@@ -71,6 +71,7 @@ stdenv.mkDerivation rec {
 
     flock # required for installing file
     expat # glibc
+    ncurses # gdb tui
   ];
 
   enableParallelBuilding = true;
@@ -97,6 +98,7 @@ stdenv.mkDerivation rec {
 
       # Install to nix out dir
       "INSTALL_DIR=${placeholder "out"}"
+      "GDB_TARGET_FLAGS_EXTRA=--enable-tui" 
     ];
 
   # -Wno-format-security

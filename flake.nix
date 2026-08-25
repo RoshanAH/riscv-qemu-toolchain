@@ -47,10 +47,13 @@
           devShells.default = pkgs.mkShell {
             packages = [
               self'.packages.qemu
+  
               self'.packages.riscv-gnu-toolchain
               pkgs.screen
               pkgs.gdb
               pkgs.bear
+              pkgs.autoconf269
+              pkgs.automake117x
             ];
           };
         };

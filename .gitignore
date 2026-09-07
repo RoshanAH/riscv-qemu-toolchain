@@ -1,3 +1,5 @@
 .direnv*
 mp*
 os*
+result
+result-*

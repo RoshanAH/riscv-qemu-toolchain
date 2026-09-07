@@ -1,4 +1,5 @@
 {
+  lib,
   fetchFromGitHub,
   fetchgit,
   stdenv,
@@ -14,6 +15,7 @@
   flock,
   expat,
   ncurses,
+  zlib,
 }:
 let
   # nix run -- nixpkgs#nix-prefetch-git --url git://sourceware.org/git/binutils-gdb.git
@@ -54,7 +56,15 @@ stdenv.mkDerivation rec {
     owner = "riscv-collab";
     repo = pname;
     rev = version;
-    sha256 = "sha256-MlsYeSJw3uCZg86uNvUdKwEpvhrU9TrnhMA0KkCOyn8=";
+    # linux-headers/ ships case-colliding filenames (xt_MARK.h vs xt_mark.h, and
+    # 7 more). On a case-insensitive filesystem -- which the macOS /nix volume is
+    # unless it was created case-sensitive -- 8 of them collapse during unpack, so
+    # the fetched tree, and therefore its hash, differs from Linux and no single
+    # pin can satisfy both platforms. Those headers are only a prerequisite of the
+    # linux/musl stage1 targets; this flake builds the newlib bare-metal toolchain,
+    # so dropping them makes the tree byte-identical everywhere.
+    postFetch = "rm -rf $out/linux-headers";
+    hash = "sha256-TGsaVJiPLf8K94JUCaxVH3dzKoeIkBx34mULKyRTdb4=";
   };
 
   postUnpack = ''
@@ -73,6 +83,40 @@ stdenv.mkDerivation rec {
     chmod -R u+w -- "$sourceRoot"
   '';
 
+  # macOS only. GCC 13's gcc/system.h includes "safe-ctype.h", which poisons
+  # toupper/tolower with object-like macros. Under libc++ (the macOS default)
+  # <vector>/<map> reach <locale>, which declares those as members, so any
+  # translation unit pulling a C++ header after system.h fails to compile.
+  #
+  # Hoisting system.h's own guarded includes is not enough: libcc1plugin.cc
+  # includes <vector> directly, well after system.h. So the headers have to be
+  # pulled in unconditionally, before the poisoning, for every TU.
+  #
+  # That unconditional include is exactly why this must stay Darwin-only. On
+  # libstdc++ it regresses the build: dragging <string>/<map> in early changes
+  # include-guard state so that <sstream>'s later <locale> is parsed after the
+  # poisoning, breaking genrvv-type-indexer.cc. Linux keeps pristine upstream
+  # behaviour, which is the configuration GCC supports.
+  postPatch = lib.optionalString stdenv.hostPlatform.isDarwin ''
+    printf '%s\n' \
+      '#ifdef __cplusplus' \
+      '# include <algorithm>' \
+      '# include <array>' \
+      '# include <functional>' \
+      '# include <list>' \
+      '# include <map>' \
+      '# include <set>' \
+      '# include <string>' \
+      '# include <vector>' \
+      '#endif' \
+      '#include "safe-ctype.h"' \
+      > gcc/gcc/cxx-headers-before-safe-ctype.h
+
+    substituteInPlace gcc/gcc/system.h \
+      --replace-fail '#include "safe-ctype.h"' \
+                     '#include "cxx-headers-before-safe-ctype.h"'
+  '';
+
   nativeBuildInputs = [
     curl
     perl
@@ -87,6 +131,13 @@ stdenv.mkDerivation rec {
     flock # required for installing file
     expat # glibc
     ncurses # gdb tui
+  ];
+
+  buildInputs = [
+    # binutils/gdb/gcc bundle an ancient zlib whose zutil.h does
+    # `#define fdopen(fd,mode) NULL` under TARGET_OS_MAC, which breaks against
+    # the macOS SDK's <stdio.h>. Build against the system zlib instead.
+    zlib
   ];
 
   enableParallelBuilding = true;
@@ -112,8 +163,15 @@ stdenv.mkDerivation rec {
 
     # Install to nix out dir
     "INSTALL_DIR=${placeholder "out"}"
-    "GDB_TARGET_FLAGS_EXTRA=--enable-tui"
+    "BINUTILS_TARGET_FLAGS_EXTRA=--with-system-zlib"
+    "GCC_EXTRA_CONFIGURE_FLAGS=--with-system-zlib"
   ];
+
+  # makeFlags entries are word-split, so a value holding several flags has to go
+  # through makeFlagsArray.
+  preBuild = ''
+    makeFlagsArray+=("GDB_TARGET_FLAGS_EXTRA=--enable-tui --with-system-zlib")
+  '';
 
   postInstall = ''
     for path in "$out/bin/"*; do

@@ -40,7 +40,18 @@ Compare the output against the versions installed on an EWS machine.
 
 ## Architecture Support
 
-* ✅ **x86_64**
+The flake evaluates for `x86_64-linux`, `aarch64-linux`, `x86_64-darwin` and
+`aarch64-darwin`. Build status as actually tested:
+
+| System | Status |
+| --- | --- |
+| `aarch64-darwin` | Built end to end and smoke-tested (gcc 13.2.0, gdb 14.1 + TUI, all 6 multilibs, cross-compiles to RISC-V ELF) |
+| `x86_64-linux` | Built through binutils, gdb, gcc stage1 and newlib with no errors; the run was stopped before gcc stage2 finished, so the tail is unverified |
+| `aarch64-linux`, `x86_64-darwin` | Evaluate, but never built |
+
+On macOS the shell does not include a host `gdb` (nixpkgs marks it unsupported
+there); use the toolchain's own `riscv64-unknown-elf-gdb`, which is what you
+want for debugging RISC-V targets anyway.
 
 ---
 

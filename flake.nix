@@ -47,13 +47,19 @@
           devShells.default = pkgs.mkShell {
             packages = [
               self'.packages.qemu
-  
               self'.packages.riscv-gnu-toolchain
               pkgs.screen
-              pkgs.gdb
-              pkgs.bear
               pkgs.autoconf269
               pkgs.automake117x
+            ]
+            # Host-native tools that nixpkgs does not support everywhere -- most
+            # notably `gdb`, which is marked bad on Darwin. The RISC-V debugger
+            # you actually use here is riscv64-unknown-elf-gdb from
+            # riscv-gnu-toolchain, so dropping these keeps the shell usable on
+            # macOS without changing the toolchain.
+            ++ builtins.filter (pkg: pkgs.lib.meta.availableOn pkgs.stdenv.hostPlatform pkg) [
+              pkgs.gdb
+              pkgs.bear
             ];
           };
         };
